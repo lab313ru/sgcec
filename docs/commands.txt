@@ -1,0 +1,95 @@
+All digit values can be typed as decimal or hex (0x).
+All bool values should be only "true" or "false" (without quotes);
+All string values should be typed in double quotes;
+
+print("text", mode);
+-- Prints text to Log, according to the specified mode;
+  - text: text string, or function result;
+  - mode: print mode.
+    - not specified: the same as none;
+    - none: tries to print a text as it is. Only for normal text strings;
+    - ascii: prints any data with replacing of non-printable chars with dots;
+    - hex: prints any data as the hex bytes (like in hex-editor).
+-- EXAMPLE: print(rom.read(0, 0x200, true), ascii); //Prints ROM's header to Log;
+
+rom.read(offset, size, ret);
+-- Sends read command to the device.
+  - offset: offset to data to read from;
+  - size: how much BYTES to read (can be >=2);
+  - ret: return or not read's result from device. If not specified, not returns result;
+-- EXAMPLE: rom.read(0, 0x200, true); //Reads ROM's header with returning device's answer as string;
+
+rom.write(offset, value);
+-- Sends write command to the device.
+  - offset: offset to data to read from;
+  - value: value to write it to offset;
+-- EXAMPLE: rom.write(0xA13000, 0); //Writes 0 to /TIME segment of ROM;
+
+rom.name.good();
+-- Returns GoodGEN-like name of the ROM: "GAME_NAME (COUNTRY_CODE) (REVXX).bin";
+-- EXAMPLE: print(rom.name.good()); //Prints full name of the ROM;
+
+rom.name.dom();
+-- Returns domestic (foreign) name of the game;
+-- EXAMPLE: print(rom.name.dom(), ascii); //Prints domestic name of the game to Log;
+
+rom.name.ovr();
+-- Returns overseas (international) name of the game;
+-- EXAMPLE: print(rom.name.ovr(), ascii); //Prints international name of the game to Log;
+
+rom.country();
+-- Returns country letters of the game;
+-- EXAMPLE: print(rom.country(), ascii); //Prints country code of the game (J, U, E, JUE, etc.) to Log;
+
+rom.revision();
+-- Returns revision number of the game (as text);
+-- EXAMPLE: print(rom.revision()); //Prints revision number of the game (0, 00, 1, 01, etc.) to Log;
+
+rom.checksum();
+-- Returns checksum from the ROM's header;
+-- EXAMPLE: print(string.format("CHECKSUM=%04X", rom.checksum())); //Prints checksum to Log;
+
+rom.size();
+-- Returns ROM's size in bytes;
+-- EXAMPLE: print(string.format("ROMSIZE=%d", rom.size())); //Prints romsize to Log;
+
+rom.dump();
+-- The same as rom.read(0, rom.size(), true);
+-- EXAMPLE:
+   f = io.open(rom.name.good(), "wb+");
+   f:write(rom.dump());
+   f:flush();
+   f:close();
+   
+rom.saveto();
+-- Shows SaveFile dialog where you can select location for the dumped cart;
+-- EXAMPLE: f = io.open(rom.saveto(), "wb+"); //Calls SaveFile dialog with opening selected path for writing;
+   
+dev.reset();
+-- The same as pressing RESET button on your Genesis. Clears and sets up /RESET pin;
+-- EXAMPLE: some carts stores more than one game, and to choose one of, you need to press RESET button;
+
+dev.delay(milliseconds);
+-- Causes the device to wait for the specified number of milliseconds;
+  - milliseconds: value;
+-- EXAMPLE: dev.delay(1000); //After this command the device will wait one second;
+
+dev.set_delay(milliseconds);
+-- Sets the inner delay between device's commands. Should be used if something goes wrong with data reading;
+  - milliseconds: value;
+-- EXAMPLE: dev.set_delay(2000); //Sets an inner interval to 2 secs;
+
+dev.time_low();
+-- Clears /TIME pin of the device;
+
+dev.time_high();
+-- Sets up /TIME pin of the device;
+
+dev.send("command");
+-- Sends directly typed command to the device, without recieving following device's answers;
+  - command: string parameter;
+-- EXAMPLE: dev.send("READ 0 100"); //Sends command to read 100 WORDS from the ROM's header;
+
+dev.info();
+-- Returns SGCE's firmware info;
+-- EXAMPLE: print(dev.info()); //Prints device info. The same as the button "Device info".

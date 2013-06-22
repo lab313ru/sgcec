@@ -1,0 +1,36 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{FFB475EC-6A26-4108-A99E-E9C71F228264}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="SGCE_Client.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="SGCE_Client">
+        <MSBuild Projects="SGCE_Client.dproj"/>
+    </Target>
+    <Target Name="SGCE_Client:Clean">
+        <MSBuild Projects="SGCE_Client.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SGCE_Client:Make">
+        <MSBuild Projects="SGCE_Client.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="SGCE_Client"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="SGCE_Client:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="SGCE_Client:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
