@@ -82,6 +82,7 @@ var
 begin
   Disable(Self);
 
+  cbbScriptChange(Self);
   SCR := TScriptThread.Create(mmoLog.Text, @mmoLog, @dlgSaveBin, @pbProgress);
   SCR.FreeOnTerminate := True;
   SCR.OnTerminate := Enable;
