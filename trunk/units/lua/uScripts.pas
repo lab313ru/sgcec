@@ -6,7 +6,7 @@ interface
 
 uses
   Lua, LuaLib, synaser, Vcl.StdCtrls, Winapi.Windows, Winapi.Messages,
-  Vcl.Dialogs, Vcl.ComCtrls;
+  Vcl.Dialogs, Vcl.ComCtrls, Vcl.Graphics;
 
   type
     TScript = class(TLua)
@@ -16,6 +16,7 @@ uses
       fPrint: ^TMemo;
       fSaveDialog: ^TSaveDialog;
       fProgress: ^TProgressBar;
+      function LineWidth(const Text: string): Integer;
       function get_port: Integer;
       procedure read_string(L: TLuaState);
       procedure trimmer(L: TLuaState);
@@ -356,7 +357,7 @@ var
   S: PBytesArray;
   len, I: Cardinal;
   MODE, Params: Integer;
-  printf: AnsiString;
+  printf, Line: AnsiString;
   C: AnsiChar;
 begin
   Result := 0;
@@ -379,6 +380,7 @@ begin
   if S = nil then Exit;
 
   printf := '';
+  Line := '';
 
   for I := 1 to len do
   begin
@@ -397,6 +399,13 @@ begin
           C := '.';
 
         printf := printf + C;
+        Line := Line + C;
+
+        if LineWidth(Line) >= (fPrint^.Width - 50) then
+        begin
+          printf := printf + #13#10;
+          Line := '';
+        end;
       end;
       HEX: printf := printf + Format('%.2X', [S^[I - 1]]);
     end;
@@ -573,6 +582,20 @@ begin
   finally
     reg.Free;
   end;
+end;
+
+function TScript.LineWidth(const Text: string): Integer;
+var
+  BM: TBitmap;
+begin
+  BM := TBitmap.Create;
+  try
+    BM.Canvas.Font := fPrint^.Font;
+    Result := BM.Canvas.TextWidth(Text);
+  finally
+    BM.Free;
+  end;
+
 end;
 
 end.
