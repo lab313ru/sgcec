@@ -116,6 +116,7 @@
         <DCC_DebugInformation>false</DCC_DebugInformation>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
+        <DCC_Define>madExcept;LeakChecking;$(DCC_Define)</DCC_Define>
         <Icon_MainIcon>ROM.ico</Icon_MainIcon>
         <DCC_MapFile>3</DCC_MapFile>
         <DCC_LocalDebugSymbols>true</DCC_LocalDebugSymbols>
