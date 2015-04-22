@@ -205,10 +205,10 @@ var
   buf: PBytesArray;
 begin
   Result := 0;
+  if lua_gettop(L) = 0 then Exit;
 
-  rom_size(L);
-  ROMSIZE := lua_tointeger(L, lua_gettop(L));
-  lua_pop(L, 1);
+  ROMSIZE := Lua_ToInteger(L, lua_gettop(L));
+  Lua_Pop(L, 1);
 
   if ROMSIZE = 0 then Exit;
 
