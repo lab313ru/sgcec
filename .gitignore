@@ -3,3 +3,6 @@
 *.dcu
 *.drc
 *.map
+Win32/Debug/*
+*.local
+*.identcache

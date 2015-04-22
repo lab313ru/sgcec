@@ -100,7 +100,11 @@ begin
     Result := 1;
   end
   else
+  begin
+    while Serial.CanRead(TIMEOUT) do
+      Serial.RecvPacket(0);
     Result := 0;
+  end;
 end;
 
 function TScript.rom_read_word(L: TLuaState): Integer;
@@ -137,7 +141,11 @@ begin
     Result := 1;
   end
   else
+  begin
+    while Serial.CanRead(TIMEOUT) do
+      Serial.RecvPacket(0);
     Result := 0;
+  end;
 end;
 
 function TScript.rom_write_byte(L: TLuaState): Integer;

@@ -1,11 +1,6 @@
 program SGCE_Client;
 
 uses
-  madExcept,
-  madLinkDisAsm,
-  madListHardware,
-  madListProcesses,
-  madListModules,
   Vcl.Forms,
   uMain in 'uMain.pas' {frmMain},
   uScripts in 'units\lua\uScripts.pas',
