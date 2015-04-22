@@ -26,8 +26,10 @@ uses
       procedure disconnect(L: TLuaState);
       procedure DoString(L: TLuaState);
     published
-      function rom_read(L: TLuaState): Integer;
-      function rom_write(L: TLuaState): Integer;
+      function rom_read_byte(L: TLuaState): Integer;
+      function rom_write_byte(L: TLuaState): Integer;
+      function rom_read_word(L: TLuaState): Integer;
+      function rom_write_word(L: TLuaState): Integer;
       function rom_saveto(L: TLuaState): Integer;
       function rom_size(L: TLuaState): Integer;
       function rom_dump(L: TLuaState): Integer;
@@ -64,7 +66,7 @@ const
   ASCII = 2;
   HEX = 3;
 
-function TScript.rom_read(L: TLuaState): Integer;
+function TScript.rom_read_byte(L: TLuaState): Integer;
 var
   OFFSET, SIZE: lua_Integer;
   S: AnsiString;
@@ -88,7 +90,7 @@ begin
   SIZE := Lua_ToInteger(L, lua_gettop(L));
   Lua_Pop(L, 2);
 
-  S := Format('READ %X %X', [OFFSET, SIZE div 2]);
+  S := Format('READ_BYTE %X %X', [OFFSET, SIZE]);
   lua_pushlstring(L, PAnsiChar(S), Length(S));
   dev_send(L);
 
@@ -101,7 +103,44 @@ begin
     Result := 0;
 end;
 
-function TScript.rom_write(L: TLuaState): Integer;
+function TScript.rom_read_word(L: TLuaState): Integer;
+var
+  OFFSET, SIZE: lua_Integer;
+  S: AnsiString;
+  SHOW: Boolean;
+  Params: Integer;
+begin
+  Params := lua_gettop(L);
+  case Params of
+    2: SHOW := False;
+    3:
+    begin
+      SHOW := lua_toboolean(L, lua_gettop(L));
+      Lua_Pop(L, 1);
+    end;
+  else
+    Result := 0;
+    Exit;
+  end;
+
+  OFFSET := Lua_ToInteger(L, lua_gettop(L) - 1);
+  SIZE := Lua_ToInteger(L, lua_gettop(L));
+  Lua_Pop(L, 2);
+
+  S := Format('READ_WORD %X %X', [OFFSET, SIZE]);
+  lua_pushlstring(L, PAnsiChar(S), Length(S));
+  dev_send(L);
+
+  if SHOW then
+  begin
+    read_string(L);
+    Result := 1;
+  end
+  else
+    Result := 0;
+end;
+
+function TScript.rom_write_byte(L: TLuaState): Integer;
 var
   OFFSET, VALUE: lua_Integer;
   S: AnsiString;
@@ -115,14 +154,33 @@ begin
   VALUE := Lua_ToInteger(L, lua_gettop(L));
   Lua_Pop(L, 2);
 
-  S := Format('WRITE %X %X', [OFFSET, VALUE]);
+  S := Format('WRITE_BYTE %X %X', [OFFSET, VALUE]);
+  lua_pushlstring(L, PAnsiChar(S), Length(S));
+  dev_send(L);
+end;
+
+function TScript.rom_write_word(L: TLuaState): Integer;
+var
+  OFFSET, VALUE: lua_Integer;
+  S: AnsiString;
+  Params: Integer;
+begin
+  Result := 0;
+  Params := lua_gettop(L);
+  if Params in [0..1] then Exit;
+
+  OFFSET := Lua_ToInteger(L, lua_gettop(L) - 1);
+  VALUE := Lua_ToInteger(L, lua_gettop(L));
+  Lua_Pop(L, 2);
+
+  S := Format('WRITE_WORD %X %X', [OFFSET, VALUE]);
   lua_pushlstring(L, PAnsiChar(S), Length(S));
   dev_send(L);
 end;
 
 function TScript.rom_checksum(L: TLuaState): Integer;
 const
-  name = 'READ 18E 1';
+  name = 'READ_WORD 18E 1';
 begin
   lua_pushlstring(L, name, Length(name));
   dev_send(L);
@@ -154,7 +212,7 @@ end;
 
 function TScript.rom_country(L: TLuaState): Integer;
 const
-  name = 'READ 1F0 2';
+  name = 'READ_WORD 1F0 8';
 begin
   lua_pushlstring(L, name, Length(name));
   dev_send(L);
@@ -212,7 +270,7 @@ begin
 
   if ROMSIZE = 0 then Exit;
 
-  S := Format('READ %X %X', [0, ROMSIZE div 2]);
+  S := Format('READ_WORD %X %X', [0, ROMSIZE div 2]);
   lua_pushlstring(L, PAnsiChar(S), Length(S));
   dev_send(L);
 
@@ -299,8 +357,10 @@ begin
 
   lua_newtable(L);
   lua_setglobal(L, 'rom');
-  luaL_dostring(L, 'rom[''write'']=rom_write');
-  luaL_dostring(L, 'rom[''read'']=rom_read');
+  luaL_dostring(L, 'rom[''write_byte'']=rom_write_byte');
+  luaL_dostring(L, 'rom[''read_byte'']=rom_read_byte');
+  luaL_dostring(L, 'rom[''write_word'']=rom_write_word');
+  luaL_dostring(L, 'rom[''read_word'']=rom_read_word');
   luaL_dostring(L, 'rom[''size'']=rom_size');
   luaL_dostring(L, 'rom[''dump'']=rom_dump');
 
@@ -332,7 +392,7 @@ end;
 
 function TScript.rom_name_d(L: TLuaState): Integer;
 const
-  name = 'READ 120 18';
+  name = 'READ_WORD 120 18';
 begin
   lua_pushlstring(L, name, Length(name));
   dev_send(L);
@@ -343,7 +403,7 @@ end;
 
 function TScript.rom_name_o(L: TLuaState): Integer;
 const
-  name = 'READ 150 18';
+  name = 'READ_WORD 150 18';
 begin
   lua_pushlstring(L, name, Length(name));
   dev_send(L);
@@ -438,7 +498,7 @@ end;
 
 function TScript.rom_revision(L: TLuaState): Integer;
 const
-  name = 'READ 18C 1';
+  name = 'READ_WORD 18C 1';
 begin
   lua_pushlstring(L, name, Length(name));
   dev_send(L);
@@ -561,7 +621,7 @@ var
   num: string;
 begin
   Result := -1;
-  reg := TRegistry.Create;
+  reg := TRegistry.Create(KEY_READ);
   try
     reg.RootKey := HKEY_LOCAL_MACHINE;
     reg.OpenKey('hardware\devicemap\serialcomm', False);
