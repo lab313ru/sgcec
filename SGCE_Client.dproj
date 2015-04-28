@@ -5,7 +5,7 @@
         <FrameworkType>VCL</FrameworkType>
         <MainSource>SGCE_Client.dpr</MainSource>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Debug</Config>
+        <Config Condition="'$(Config)'==''">Release</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>1</TargetedPlatforms>
         <AppType>Application</AppType>
@@ -120,7 +120,6 @@
         <BRCC_EnableMultiByte>true</BRCC_EnableMultiByte>
         <DCC_DebugInformation>true</DCC_DebugInformation>
         <DCC_LocalDebugSymbols>true</DCC_LocalDebugSymbols>
-        <DCC_Define>madExcept;LeakChecking;$(DCC_Define)</DCC_Define>
         <Icon_MainIcon>ROM.ico</Icon_MainIcon>
         <DCC_MapFile>3</DCC_MapFile>
         <VerInfo_Build>26</VerInfo_Build>
