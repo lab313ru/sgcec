@@ -69,6 +69,7 @@ void setup() {
     pinMode(CEPin, OUTPUT);
     pinMode(OEPin, OUTPUT);
     pinMode(LWRPin, OUTPUT);
+    pinMode(UWRPin, OUTPUT);
     pinMode(TIMEPin, OUTPUT);
     pinMode(ASPin, OUTPUT);
     pinMode(VRESPin, OUTPUT);
@@ -476,7 +477,7 @@ void doRESET() {
 }
 
 void doINFO() {
-    Serial.println("Welcome to SGC Explorer - v2.3.15");
+    Serial.println("Welcome to SGC Explorer - v2.3.16");
     Serial.println("Based on Bruno Freitas's SGCE v2.3.12");
     Serial.println("04/2015 - Dr. MefistO[Lab 313]");
     Serial.println("(c)05/2011 - bootsector@ig.com.br");
@@ -523,6 +524,10 @@ void loop() {
             TIMEHigh();
         } else if (strncasecmp(token, "RESET", MAX_SERIAL_STRING_SIZE) == 0) {
             doRESET();
+        } else if (strncasecmp(token, "RESET_LOW", MAX_SERIAL_STRING_SIZE) == 0) {
+            VRESHigh();
+        } else if (strncasecmp(token, "RESET_HIGH", MAX_SERIAL_STRING_SIZE) == 0) {
+            VRESLow();
         } else if (strncasecmp(token, "INFO", MAX_SERIAL_STRING_SIZE) == 0) {
             doINFO();
         } else {

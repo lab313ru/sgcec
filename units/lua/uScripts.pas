@@ -41,6 +41,8 @@ uses
       function rom_checksum(L: TLuaState): Integer;
       function dev_delay(L: TLuaState): Integer;
       function dev_set_delay(L: TLuaState): Integer;
+      function dev_reset_low(L: TLuaState): Integer;
+      function dev_reset_high(L: TLuaState): Integer;
       function dev_time_low(L: TLuaState): Integer;
       function dev_time_high(L: TLuaState): Integer;
       function dev_info(L: TLuaState): Integer;
@@ -387,6 +389,8 @@ begin
   lua_newtable(L);
   lua_setglobal(L, 'dev');
   luaL_dostring(L, 'dev[''reset'']=dev_reset');
+  luaL_dostring(L, 'dev[''reset_low'']=dev_reset_low');
+  luaL_dostring(L, 'dev[''reset_high'']=dev_reset_high');
   luaL_dostring(L, 'dev[''delay'']=dev_delay');
   luaL_dostring(L, 'dev[''set_delay'']=dev_set_delay');
   luaL_dostring(L, 'dev[''time_low'']=dev_time_low');
@@ -543,7 +547,7 @@ begin
   S_ := S;
 
   fSaveDialog^.InitialDir := GetCurrentDir;
-  fSaveDialog^.FileName := S_;
+  fSaveDialog^.FileName := StringReplace(S_, ':', '_', [rfReplaceAll]);
 
   if not fSaveDialog^.Execute then
   begin
@@ -602,6 +606,24 @@ const
   TIME_LOW_ = 'TIME_LOW';
 begin
   lua_pushlstring(L, TIME_LOW_, Length(TIME_LOW_));
+  dev_send(L);
+  Result := 0;
+end;
+
+function TScript.dev_reset_high(L: TLuaState): Integer;
+const
+  RESET_HIGH_ = 'RESET_HIGH';
+begin
+  lua_pushlstring(L, RESET_HIGH_, Length(RESET_HIGH_));
+  dev_send(L);
+  Result := 0;
+end;
+
+function TScript.dev_reset_low(L: TLuaState): Integer;
+const
+  RESET_LOW_ = 'RESET_LOW';
+begin
+  lua_pushlstring(L, RESET_LOW_, Length(RESET_LOW_));
   dev_send(L);
   Result := 0;
 end;

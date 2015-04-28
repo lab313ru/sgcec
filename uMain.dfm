@@ -137,7 +137,7 @@ object frmMain: TfrmMain
   object dlgSaveBin: TSaveDialog
     DefaultExt = 'bin'
     Filter = 'Binary Files (*.bin)|*.bin|All Files (*.*)|*.*'
-    Options = [ofOverwritePrompt, ofHideReadOnly, ofNoChangeDir, ofFileMustExist, ofNoNetworkButton, ofEnableSizing, ofDontAddToRecent]
+    Options = [ofOverwritePrompt, ofHideReadOnly, ofFileMustExist, ofNoNetworkButton, ofEnableSizing, ofDontAddToRecent]
     Title = 'Where to save?..'
     Left = 216
     Top = 256
