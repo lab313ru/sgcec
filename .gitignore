@@ -6,3 +6,4 @@
 Win32/Debug/*
 *.local
 *.identcache
+Win32/Release/*
