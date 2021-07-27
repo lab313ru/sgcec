@@ -59,7 +59,7 @@ int UWRPin = 44;
 char *command;
 
 /* Operations delay */
-uint16_t opDelay = 10;
+uint16_t opDelay = 50;
 
 void setup() {
     pinMode(addrClockPin, OUTPUT);
@@ -232,7 +232,7 @@ void wordWrite(unsigned long addr, word value, int CARTState) {
 
     ASLow();
 
-    for(i = 0; i <= DATA_PINS; i++) {
+    for(i = 0; i < DATA_PINS; i++) {
         pinMode(dataPin[i], OUTPUT);
 
         if(value & (1 << i)) {
@@ -276,7 +276,7 @@ void byteWrite(unsigned long addr, byte value, int CARTState) {
 
     value = ((value & 0xFF) | ((value & 0xFF) << 8));
 
-    for(i = 0; i <= DATA_PINS; i++) {
+    for(i = 0; i < DATA_PINS; i++) {
         pinMode(dataPin[i], OUTPUT);
 
         if(value & (1 << i)) {
@@ -373,7 +373,7 @@ void ROMReadByte() {
 
     for(i = 0L; i < count; i++) {
         data = byteRead(addr + i, !digitalRead(CARTPin));
-        Serial.print(data, BYTE);
+        Serial.write((unsigned char)data);
     }
 }
 
@@ -398,8 +398,8 @@ void ROMReadWord() {
     for(i = 0L; i < count; i++) {
         data = wordRead(addr + (i * 2), !digitalRead(CARTPin));
 
-        Serial.print((data & 0xFF00) >> 8, BYTE);
-        Serial.print(data & 0xFF, BYTE);
+        Serial.write((unsigned char)((data & 0xFF00) >> 8));
+        Serial.write((unsigned char)(data & 0xFF));
     }
 }
 
